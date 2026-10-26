@@ -1,42 +1,4 @@
 """
-Assignment 2: training pipeline.
-
-You're using a script for this stage. If you'd rather use a notebook,
-write train.ipynb instead and delete this file. main.py refuses to run if
-it finds both train.py and train.ipynb, so exactly one of them must exist.
-
-Replace this docstring and everything below it with your own code. When run
-via uv run python main.py train, this file must, start to finish, with no
-manual steps in between:
-
-- Get your Roboflow API key via from api_key import load_api_key, so that it
-  works whether the key is in your .env file or in the environment, and
-  download your dataset version from Roboflow Universe.
-- Finetune yolo11n/yolo11s (or the -cls variant) on that dataset, from the
-  pretrained checkpoint.
-- Evaluate on the test split against the two baselines named in the brief: the
-  pretrained COCO model zero-shot, and a trivial predict-nothing / majority
-  class baseline.
-- Sweep the confidence threshold, compute the expected cost at each point from
-  the cost matrix you defined in REPORT.md, and save the sweep.
-- Save everything app.py needs to build its dashboard without retraining:
-  the metrics, the per-class numbers, the cost sweep, and the chosen operating
-  point.
-
-This is your real training pipeline. It takes as long as it takes, and it runs
-wherever training is practical for you: your own machine, a GPU you have access
-to, or a hosted notebook. Nothing re-runs it to check your submission.
-
-The weights it produces are what you commit to weights/ and what your app
-serves. Say in REPORT.md where you trained and what settings you used.
-
-Save the trained model into weights/. That is the file you commit and the file
-app.py loads.
-
-How you structure the code beyond that is your call to make and be able to
-defend: file layout, function boundaries, naming.
-"""
-"""
 Assignment 2 - training pipeline (Hard Hat Workers, head vs helmet).
 
 Run with:  uv run python main.py train   (or: python train.py on Colab)
@@ -56,6 +18,7 @@ What this does, start to finish, with no manual steps:
 """
 
 import json
+import os
 import shutil
 from pathlib import Path
 
@@ -198,11 +161,12 @@ def image_level_scores(weights: Path) -> pd.DataFrame:
                           "gt_positive": int(n_heads > 0)}
 
     def max_conf(model_path: str, class_id: int, column: str) -> None:
+        # One image at a time: simple and memory-safe on any machine.
         model = YOLO(model_path)
-        for r in model.predict(source=[str(p) for p in images], conf=0.001, imgsz=IMGSZ,
-                               stream=True, verbose=False):
+        for img in images:
+            r = model.predict(source=str(img), conf=0.001, imgsz=IMGSZ, verbose=False)[0]
             confs = [float(c) for c, k in zip(r.boxes.conf, r.boxes.cls) if int(k) == class_id]
-            rows[Path(r.path).name][column] = max(confs, default=0.0)
+            rows[img.name][column] = max(confs, default=0.0)
 
     max_conf(str(weights), head_id, "finetuned")
     max_conf(BASE_MODEL, COCO_PERSON_ID, "coco_zeroshot")
@@ -230,7 +194,13 @@ def summary_at(df: pd.DataFrame, column: str, threshold: float = 0.5) -> dict:
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     data_yaml = download_dataset()
-    weights = finetune(data_yaml)
+    # SKIP_TRAINING=1 reuses weights/best.pt from an earlier run (used once on Colab
+    # after the evaluation step crashed). By default the pipeline always trains.
+    if os.environ.get("SKIP_TRAINING") == "1" and WEIGHTS.exists():
+        print(f"SKIP_TRAINING=1: reusing {WEIGHTS}")
+        weights = WEIGHTS
+    else:
+        weights = finetune(data_yaml)
 
     det = detection_metrics(weights, data_yaml)
     det["baselines"] = {
