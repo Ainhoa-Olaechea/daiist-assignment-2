@@ -1,0 +1,102 @@
+{
+  "dataset": {
+    "workspace": "joseph-nelson",
+    "project": "hard-hat-workers",
+    "version": 5
+  },
+  "training": {
+    "base_model": "yolo11n.pt",
+    "epochs": 50,
+    "patience": 15,
+    "imgsz": 640,
+    "batch": 16,
+    "seed": 0
+  },
+  "detection_test": {
+    "overall": {
+      "mAP50": 0.9745419034920513,
+      "mAP50-95": 0.6832896653029106
+    },
+    "per_class": {
+      "head": {
+        "precision": 0.9427032113065319,
+        "recall": 0.9291635421711315,
+        "AP50": 0.9660559430438227,
+        "AP50-95": 0.6784945132453376
+      },
+      "helmet": {
+        "precision": 0.956887369185625,
+        "recall": 0.9404699738903394,
+        "AP50": 0.98302786394028,
+        "AP50-95": 0.6880848173604837
+      }
+    },
+    "confusion_matrix": {
+      "labels": [
+        "head",
+        "helmet",
+        "background"
+      ],
+      "rows_are": "predicted",
+      "columns_are": "true",
+      "matrix": [
+        [
+          706,
+          7,
+          2096
+        ],
+        [
+          20,
+          1901,
+          4443
+        ],
+        [
+          0,
+          7,
+          0
+        ]
+      ]
+    },
+    "baselines": {
+      "coco_zeroshot": "COCO has no 'head' or 'helmet' class, so AP is 0 for both by construction",
+      "predict_nothing": "No boxes, so AP and recall are 0 for both classes"
+    }
+  },
+  "image_level_test": {
+    "positive_class": "image contains at least one 'head' (worker without helmet)",
+    "test_images": 706,
+    "test_positive_rate": 0.19830028328611898,
+    "at_threshold_0.5": {
+      "finetuned": {
+        "threshold": 0.5,
+        "TP": 121,
+        "FP": 6,
+        "FN": 19,
+        "TN": 560,
+        "accuracy": 0.9645892351274787,
+        "precision": 0.952755905511811,
+        "recall": 0.8642857142857143
+      },
+      "coco_zeroshot": {
+        "threshold": 0.5,
+        "TP": 140,
+        "FP": 531,
+        "FN": 0,
+        "TN": 35,
+        "accuracy": 0.24787535410764872,
+        "precision": 0.20864381520119224,
+        "recall": 1.0
+      },
+      "predict_nothing": {
+        "threshold": 0.5,
+        "TP": 0,
+        "FP": 0,
+        "FN": 140,
+        "TN": 566,
+        "accuracy": 0.8016997167138811,
+        "precision": 0.0,
+        "recall": 0.0
+      }
+    }
+  }
+}
