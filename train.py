@@ -27,6 +27,7 @@ import yaml
 from roboflow import Roboflow
 from ultralytics import YOLO
 
+import costs
 from api_key import load_api_key
 
 # ---------------------------------------------------------------- settings
@@ -229,6 +230,7 @@ def main() -> None:
     (OUT / "metrics.json").write_text(json.dumps(results, indent=2))
     print(json.dumps(results, indent=2))
     print(f"\nSaved weights to {WEIGHTS} and results to {OUT}/")
+    costs.run()  # 7. cost the decision and pick the thresholds
 
 
 if __name__ == "__main__":

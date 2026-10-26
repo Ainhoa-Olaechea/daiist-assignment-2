@@ -1,0 +1,100 @@
+{
+  "assumptions": {
+    "cost_fp": 3.0,
+    "cost_fn": 35.0,
+    "cost_tp": 3.0,
+    "cost_tn": 0.0,
+    "cost_review": 0.2,
+    "base_rate": 0.05,
+    "frames_per_day": 10800,
+    "review_seconds": 30,
+    "reviewer_hours_per_day": 7.5,
+    "working_days_per_year": 230
+  },
+  "chosen_single_threshold": 0.32,
+  "chosen_band": {
+    "low": 0.01,
+    "high": 0.85
+  },
+  "single": {
+    "low": 0.32,
+    "high": 0.32,
+    "base_rate": 0.05,
+    "cost_per_1000": 329.74507824331135,
+    "review_share": 0.0,
+    "TP": 46.42857142857143,
+    "FP": 21.819787985865723,
+    "FN": 3.57142857142857,
+    "TN": 928.1802120141342,
+    "by_route": {
+      "bare head": {
+        "pass": 3.57142857142857,
+        "review": 0.0,
+        "fail": 46.42857142857143
+      },
+      "all helmets": {
+        "pass": 928.1802120141342,
+        "review": 0.0,
+        "fail": 21.819787985865723
+      }
+    }
+  },
+  "band": {
+    "low": 0.01,
+    "high": 0.85,
+    "base_rate": 0.05,
+    "cost_per_1000": 246.7698132256437,
+    "review_share": 0.1409919232710752,
+    "TP": 47.857142857142854,
+    "FP": 0.0,
+    "FN": 2.1428571428571463,
+    "TN": 950.0,
+    "by_route": {
+      "bare head": {
+        "pass": 2.1428571428571463,
+        "review": 33.57142857142857,
+        "fail": 14.285714285714285
+      },
+      "all helmets": {
+        "pass": 842.5795053003533,
+        "review": 107.42049469964664,
+        "fail": 0.0
+      }
+    }
+  },
+  "policies": {
+    "do_nothing": {
+      "cost_per_1000": 1750.0,
+      "reviewers_needed": 0,
+      "cost_per_day": 18900.0,
+      "cost_per_year": 4347000
+    },
+    "human_checks_everything": {
+      "cost_per_1000": 350.0,
+      "reviews_per_day": 10800,
+      "review_hours_per_day": 90.0,
+      "reviewers_needed": 12,
+      "cost_per_day": 3780.0,
+      "cost_per_year": 869400
+    },
+    "model_alone": {
+      "cost_per_1000": 329.75,
+      "threshold": 0.32,
+      "reviewers_needed": 0,
+      "cost_per_day": 3561.25,
+      "cost_per_year": 819087
+    },
+    "model_plus_review": {
+      "cost_per_1000": 246.77,
+      "low": 0.01,
+      "high": 0.85,
+      "review_share": 0.1409919232710752,
+      "reviews_per_day": 1523,
+      "review_hours_per_day": 12.7,
+      "reviewers_needed": 2,
+      "cost_per_day": 2665.11,
+      "cost_per_year": 612976
+    }
+  },
+  "fn_break_even_eur": 1.5
+}
